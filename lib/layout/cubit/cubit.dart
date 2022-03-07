@@ -50,9 +50,10 @@ class SocialCubit extends Cubit<SocialStates> {
   ];
 
   void ChangeBottomNavScreen(index) {
-    if(index==0){
-      getPosts();
-    }
+    // if(index==0){
+    //   posts=[];
+    //   getPosts();
+    // }
     if(index==1) {
       getUsers();
     }
@@ -250,6 +251,8 @@ void removePostImage(){
     } ).catchError((error){
       print(error.toString());
       emit(SocialCreatePostErrorState());
+      print(error.toString());
+
     });
   }
 
@@ -283,6 +286,8 @@ void removePostImage(){
       // getUserData();
     }).catchError((error){
       emit(SocialCreatePostErrorState());
+      print(error.toString());
+
     });
   }
 
@@ -290,19 +295,21 @@ List<postModel> posts=[];
 List<String>postsId=[];
 List<int> likes=[];
   void getPosts(){
-    // if(likes[0]==null){
+    // if(likes[postsId]==null){
     //   likes[0]=0;
     // }
-    emit(SocialGetPostsLoadingState());
+    // emit(SocialGetPostsLoadingState());
     FirebaseFirestore.instance.collection('posts').get().then((value) {
       value.docs.forEach((element) {
         element.reference.collection('likes').get().then((value) {
           likes.add(value.docs.length);
           postsId.add(element.id);
           posts.add(postModel.fromJson(element.data()));
+          // emit(SocialGetPostsSuccessState());
+
         }).catchError((error){});
-        postsId.add(element.id);
-        posts.add(postModel.fromJson(element.data()));
+        // postsId.add(element.id);
+        // posts.add(postModel.fromJson(element.data()));
 
 
       });
@@ -310,14 +317,21 @@ List<int> likes=[];
       emit(SocialGetPostsSuccessState());
     }).catchError((error){
       emit(SocialGetPostsErrorState(error));
+      print(error.toString());
+
     });
   }
 
-void likePosts(String psotId){
-    FirebaseFirestore.instance.collection('posts').doc(psotId).collection('likes').doc(userModel!.uId).set({'like':true,}).then((value) {
+void likePosts(String postId){
+    FirebaseFirestore
+        .instance.
+    collection('posts').doc(postId).collection('likes').doc(userModel!.uId).set({'like':true,}).then((value) {
       emit(SocialLikePostsSuccessState());
     }).catchError((error){
+      print(error.toString());
       emit(SocialLikePostsErrorState(error));
+      print(error.toString());
+
 
     });
 
@@ -336,6 +350,8 @@ List<SocialUserModel> users=[];
       emit(SocialGetAllUsersSuccessState());
     }).catchError((error){
       emit(SocialGetAllUsersErrorState(error));
+      print(error.toString());
+
     });
 
 
@@ -360,6 +376,8 @@ List<SocialUserModel> users=[];
           emit(SocialSendMessageSuccessState());
     }).catchError((error){
       emit(SocialSendMessageErrorState(error));
+      print(error.toString());
+
     });
 
     FirebaseFirestore.
@@ -373,6 +391,8 @@ List<SocialUserModel> users=[];
       emit(SocialSendMessageSuccessState());
     }).catchError((error){
       emit(SocialSendMessageErrorState(error));
+      print(error.toString());
+
     });
 
 
@@ -393,6 +413,7 @@ List<SocialUserModel> users=[];
             message.add(MessageModel.fromJson(element.data()));
           });
           emit(SocialGetMessageSuccessState());
+
     });
   }
 
